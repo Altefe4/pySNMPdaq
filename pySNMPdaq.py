@@ -49,7 +49,7 @@ def pySNMPdaq_loop():
 
     """
 
-    print '\n### Starting pySNMPdaq main loop ###'
+    print ('\n### Starting pySNMPdaq main loop ###')
 
     # Start logging
     make_sure_path_exists(config.LOG_DIR, do_logging=False)
@@ -93,7 +93,7 @@ def pySNMPdaq_loop():
             ip_oid_list_per_timer[timer_n] = []
         ip_oid_list_per_timer[timer_n].append(ip_oid_entry)
 
-    print '\n### Number of request per timer batch ###'
+    print ('\n### Number of request per timer batch ###')
     for i, timer_id in enumerate(ip_oid_list_per_timer.keys()):
         print('Timer ID: %s  N_requests: %d  '
               'triggered_every i*%d+%d seconds ' %
@@ -179,18 +179,18 @@ def pySNMPdaq_loop():
                                 callback=query_results_queue.put)
 
     except KeyboardInterrupt:
-        print 'main() received KeyboardInterrupt'
+        print ('main() received KeyboardInterrupt')
 
-        print 'Exiting timers'
+        print ('Exiting timers')
         # new_file_timer.stop()
         for query_timer in query_timers:
             query_timer.stop()
 
-        print 'Stopping process pool'
+        print ('Stopping process pool')
         proc_pool.close()
         proc_pool.join()
 
-        print 'Exiting data handler'
+        print ('Exiting data handler')
         dataHandler.stop()
 
     finally:
@@ -209,7 +209,7 @@ def pySNMPdaq_loop():
         proc_pool.join()
 
         logging.debug('Clean up done. Exit!')
-        print 'Exit!'
+        print ('Exit!')
 
     return
  
@@ -506,7 +506,7 @@ class DataHandler:
         while self.KEEP_RUNNING:
             sleep(0.01)
             if self.WRITE_TO_FILE.is_set():
-                print 'WRITE TO FILE NOW...please...'
+                print ('WRITE TO FILE NOW...please...')
 
                 if len(record_list_buffer) > 0:
                     # Build a DataFrame from the data records which
@@ -802,17 +802,17 @@ def copy_file_via_scp(filename,
                         "%(user)s@%(server)s:%(remotepath)s" % vars()]).wait() 
     # Check if scp copy workd
     if returncode==0:
-        print 'SSH transfer of ' + filename + ' complete'
+        print ('SSH transfer of ' + filename + ' complete')
         if move_to_archive==True:
             move(filename, archive_dir)
-            print 'moved ' + filename + 'to ARCHIVE ' + archive_dir
+            print ('moved ' + filename + 'to ARCHIVE ' + archive_dir)
         
         # Check REFUGIUM for files and copy them
         if check_refug == True:
-            print 'Checking REFUGIUM'
+            print ('Checking REFUGIUM')
             for f in listdir_fullpath(refug_dir):
                 if fnmatch(f, '*.dat.gz'):
-                    print 'Moving ' + f + ' from REFUGIUM to server'
+                    print ('Moving ' + f + ' from REFUGIUM to server')
                     copy_file_via_scp(f, 
                                       user=user, 
                                       server=server, 
@@ -823,10 +823,10 @@ def copy_file_via_scp(filename,
                                       archive_dir=archive_dir)                    
     # If scp copy did not work, move files to REFUGIUM                                      
     else:
-        print 'SSH transfer of ' + filename + ' failed'
+        print ('SSH transfer of ' + filename + ' failed')
         if move_to_refug:
             move(filename, refug_dir)
-            print 'file moved to REFUGIUM'   
+            print ('file moved to REFUGIUM')
 
 
 class Timer:
@@ -854,7 +854,7 @@ class Timer:
                         print_debug_info=self.print_debug_info)
             self.target_queue.put(self.message)
             if self.print_debug_info:
-                print 'Timer sent message %s' % str(self.message)
+                print ('Timer sent message %s' % str(self.message))
             logging.debug('Timer sent message %s' % str(self.message))
         logging.debug('Stopping timer who sent message %s' % str(self.message))
 
@@ -865,14 +865,14 @@ class Timer:
         self._keep_running = False
         logging.info('Stopping timer with message %s. This may take some time' % str(self.message))
         if self.n_sec is None:
-            print 'Stopping timer. This may take up to %d minutes' % self.n_min
+            print ('Stopping timer. This may take up to %d minutes' % self.n_min)
         elif self.n_min is None:
-            print 'Stopping timer. This may take up to %d seconds' % self.n_sec
+            print ('Stopping timer. This may take up to %d seconds' % self.n_sec)
         else:
-            print 'n_min or n_sec must not be None'
+            print ('n_min or n_sec must not be None')
         self._timer_loop_process.terminate()
         self._timer_loop_process.join()
-        print 'Timer stopped'
+        print ('Timer stopped')
 
 
 def smart_sleep(n_sec=None, n_min=None, offset_sec=0, print_debug_info=False):
@@ -911,16 +911,16 @@ def smart_sleep(n_sec=None, n_min=None, offset_sec=0, print_debug_info=False):
     t_reached = datetime.utcnow()
 
     if print_debug_info:
-        print 't                  = ', t
-        print 't_goal             = ', t_goal
+        print ('t                  = ', t)
+        print ('t_goal             = ', t_goal)
 
-        print 't_reached          = ', t_reached
-        print 't_reached - t_goal = %d seconds' % (t_reached - t_goal).total_seconds()
+        print ('t_reached          = ', t_reached)
+        print ('t_reached - t_goal = %d seconds' % (t_reached - t_goal).total_seconds())
 
     while t_reached < t_goal:
         t_diff_sec = (t_goal - t_reached).total_seconds()
         sleep(t_diff_sec)
         t_reached = datetime.utcnow()
         if print_debug_info:
-            print '  extra sleep of ' + str(t_diff_sec)
-            print '  t_reached = ', t_reached
+            print ('  extra sleep of ' + str(t_diff_sec))
+            print ('  t_reached = ', t_reached)

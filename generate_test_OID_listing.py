@@ -3,7 +3,7 @@
 import pprint
 
 timers = [1, 2]
-hosts = ['localhost', ]
+hosts = ['172.20.67.241','172.20.67.113']
 OID_dict = {'uptime_1': '.1.3.6.1.2.1.1.3.0',
             'uptime_2': '.1.3.6.1.2.1.1.3.0'}
 ID_prefix = 'test'

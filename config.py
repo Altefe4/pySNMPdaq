@@ -17,7 +17,7 @@ DATE_FORMAT = '%Y%m%d_%H%M%S'
 
 # Data directory config
 # ---------------------
-DATA_DIR = '/tmp/pySNMPdaq/data'
+DATA_DIR = 'logs/data'
 CONFIG_ARCHIVE_DIR = 'config'
 ARCHIVE_FILES = True
 ARCHIVE_DIR = 'archive'

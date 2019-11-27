@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys, os, time, atexit
 from signal import SIGTERM 
@@ -28,7 +28,7 @@ class Daemon:
 			if pid > 0:
 				# exit first parent
 				sys.exit(0) 
-		except OSError, e: 
+		except OSError as e:
 			sys.stderr.write("fork #1 failed: %d (%s)\n" % (e.errno, e.strerror))
 			sys.exit(1)
 	
@@ -43,16 +43,16 @@ class Daemon:
 			if pid > 0:
 				# exit from second parent
 				sys.exit(0) 
-		except OSError, e: 
+		except OSError as e:
 			sys.stderr.write("fork #2 failed: %d (%s)\n" % (e.errno, e.strerror))
 			sys.exit(1) 
 	
 		# redirect standard file descriptors
 		sys.stdout.flush()
 		sys.stderr.flush()
-		si = file(self.stdin, 'r')
-		so = file(self.stdout, 'a+')
-		se = file(self.stderr, 'a+', 0)
+		si = open(self.stdin, 'r')
+		so = open(self.stdout, 'a+')
+		se = open(self.stderr, 'a+', 0)
 		os.dup2(si.fileno(), sys.stdin.fileno())
 		os.dup2(so.fileno(), sys.stdout.fileno())
 		os.dup2(se.fileno(), sys.stderr.fileno())
@@ -60,7 +60,7 @@ class Daemon:
 		# write pidfile
 		atexit.register(self.delpid)
 		pid = str(os.getpid())
-		file(self.pidfile,'w+').write("%s\n" % pid)
+		open(self.pidfile,'w+').write("%s\n" % pid)
 	
 	def delpid(self):
 		os.remove(self.pidfile)
@@ -71,7 +71,7 @@ class Daemon:
 		"""
 		# Check for a pidfile to see if the daemon already runs
 		try:
-			pf = file(self.pidfile,'r')
+			pf = open(self.pidfile,'r')
 			pid = int(pf.read().strip())
 			pf.close()
 		except IOError:
@@ -83,7 +83,7 @@ class Daemon:
 			sys.exit(1)
 		
 		# Start the daemon 
-  		print '### Starting daemon ###'
+  		print ('### Starting daemon ###')
 		self.daemonize()
 		self.run()
 
@@ -93,7 +93,7 @@ class Daemon:
 		"""
 		# Get the pid from the pidfile
 		try:
-			pf = file(self.pidfile,'r')
+			pf = open(self.pidfile,'r')
 			pid = int(pf.read().strip())
 			pf.close()
 		except IOError:
@@ -104,20 +104,20 @@ class Daemon:
 			sys.stderr.write(message % self.pidfile)
 			return # not an error in a restart 
    
-		print '### Stoping daemon  ###'
+		print ('### Stoping daemon  ###')
   
 		# Try killing the daemon process	
 		try:
 			while 1:
 				os.kill(pid, SIGTERM)
 				time.sleep(0.1)
-		except OSError, err:
+		except OSError as err:
 			err = str(err)
 			if err.find("No such process") > 0:
 				if os.path.exists(self.pidfile):
 					os.remove(self.pidfile)
 			else:
-				print str(err)
+				print (str(err))
 				sys.exit(1)
 
 	def restart(self):
